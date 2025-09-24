@@ -150,8 +150,13 @@
                     </div>
                     
                     <div data-aos="fade-left">
-                        <form class="bg-white p-8 rounded-lg shadow-sm border border-gray-100" id="contact-form" action="https://formspree.io/f/mdkwndpp" method="POST">
+                        <form class="bg-white p-8 rounded-lg shadow-sm border border-gray-100" id="contact-form" action="https://formspree.io/f/mblanzva" method="POST">
                             <h3 class="text-xl font-heading font-bold mb-6" data-en="Send Message" data-id="Kirim Pesan">Send Message</h3>
+                            
+                            <!-- Hidden fields for Formspree -->
+                            <input type="hidden" name="_subject" value="New Contact Form Submission from REEX Website">
+                            <!-- Anti-spam field -->
+                            <input type="text" name="_gotcha" style="display:none">
                             
                             <!-- Success/Error Messages -->
                             <div id="form-message" class="hidden mb-6">
