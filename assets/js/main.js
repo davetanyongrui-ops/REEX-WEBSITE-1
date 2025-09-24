@@ -122,55 +122,79 @@ class REEXWebsite {
         // Contact form submission
         const contactForm = document.getElementById('contact-form');
         if (contactForm) {
-            contactForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
+            contactForm.addEventListener('submit', function(e) {
+                console.log('Form submission started');
+                e.preventDefault(); // Prevent default form submission
                 
                 const submitButton = document.getElementById('submit-button');
-                const buttonText = submitButton.querySelector('.button-text');
-                const loadingText = submitButton.querySelector('.loading-text');
+                const buttonText = submitButton ? submitButton.querySelector('.button-text') : null;
+                const loadingText = submitButton ? submitButton.querySelector('.loading-text') : null;
                 const formMessage = document.getElementById('form-message');
                 const successMessage = document.getElementById('success-message');
                 const errorMessage = document.getElementById('error-message');
                 
+                console.log('DOM Elements:', {
+                    submitButton,
+                    buttonText,
+                    loadingText,
+                    formMessage,
+                    successMessage,
+                    errorMessage
+                });
+                
                 // Show loading state
-                submitButton.disabled = true;
-                buttonText.classList.add('hidden');
-                loadingText.classList.remove('hidden');
+                if (submitButton) submitButton.disabled = true;
+                if (buttonText) buttonText.classList.add('hidden');
+                if (loadingText) loadingText.classList.remove('hidden');
                 
                 // Hide previous messages
-                formMessage.classList.add('hidden');
-                successMessage.classList.add('hidden');
-                errorMessage.classList.add('hidden');
+                if (formMessage) formMessage.classList.add('hidden');
+                if (successMessage) successMessage.classList.add('hidden');
+                if (errorMessage) errorMessage.classList.add('hidden');
                 
-                try {
-                    const formData = new FormData(contactForm);
+                // Collect form data
+                const formData = new FormData(contactForm);
+                
+                // Log form data for debugging
+                console.log('Form data being submitted:');
+                for (let [key, value] of formData.entries()) {
+                    console.log(key, value);
+                }
+                
+                // Send form data using fetch
+                fetch(contactForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                }).then(response => {
+                    console.log('Form submission response:', response);
+                    console.log('Response status:', response.status);
+                    console.log('Response ok?', response.ok);
                     
-                    const response = await fetch(contactForm.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        // Success
-                        formMessage.classList.remove('hidden');
-                        successMessage.classList.remove('hidden');
+                    // Formspree returns a 200 status with JSON on success
+                    if (response.status === 200) {
+                        console.log('Form submitted successfully');
+                        // Show success message
+                        if (formMessage) formMessage.classList.remove('hidden');
+                        if (successMessage) successMessage.classList.remove('hidden');
+                        // Reset form
                         contactForm.reset();
                     } else {
-                        throw new Error('Form submission failed');
+                        throw new Error('Form submission failed with status: ' + response.status);
                     }
-                } catch (error) {
-                    // Error
-                    formMessage.classList.remove('hidden');
-                    errorMessage.classList.remove('hidden');
-                } finally {
+                }).catch(error => {
+                    console.error('Form submission error:', error);
+                    // Show error message
+                    if (formMessage) formMessage.classList.remove('hidden');
+                    if (errorMessage) errorMessage.classList.remove('hidden');
+                }).finally(() => {
                     // Reset button state
-                    submitButton.disabled = false;
-                    buttonText.classList.remove('hidden');
-                    loadingText.classList.add('hidden');
-                }
+                    if (submitButton) submitButton.disabled = false;
+                    if (buttonText) buttonText.classList.remove('hidden');
+                    if (loadingText) loadingText.classList.add('hidden');
+                });
             });
         }
 
